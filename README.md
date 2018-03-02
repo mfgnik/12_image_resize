@@ -28,6 +28,12 @@ optional arguments:
   --output_path OUTPUT_PATH
                         path, where we should save image
  ```
+ 
+ Example of using on Mac OS. Input file has size: 830x222:
+ ```bash
+ python re_size.py --input_path image.png --scale 2
+ ```
+ Result: image__1660x444.png
 
 # Project Goals
 

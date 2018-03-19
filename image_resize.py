@@ -46,11 +46,11 @@ def get_new_size_by_dimension(image_size, height, width):
             print('Warning: change of scale')
         return height, width
     elif height:
-        scale = height / image_size[1]
-        return image_size[0] * scale, height
+        aspect_ratio = height / image_size[1]
+        return image_size[0] * aspect_ratio, height
     elif arguments.width:
-        scale = width / image_size[0]
-        return width, image_size[1] * scale
+        aspect_ratio = width / image_size[0]
+        return width, image_size[1] * aspect_ratio
 
 
 def get_new_size(image, arguments):

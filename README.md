@@ -12,7 +12,7 @@ pip install requirements.txt
 
 ```
 
-# Quick Star
+# Quick Start
 
 ```bash
 usage: re_size.py [-h] --input_path INPUT_PATH [--height HEIGHT]

@@ -40,30 +40,34 @@ def get_image(input_file_path):
     return Image.open(input_file_path)
 
 
-def get_new_size_by_dimension(image_size, height, width):
+def get_new_size_by_dimension(image_width, image_height, height, width):
+    warning = None
     if height and width:
-        if width / image_size[0] != height / image_size[1]:
-            print('Warning: change of scale')
-        return height, width
+        allowed_error = 10 ** -6
+        if abs(width / image_width - height / image_height) < allowed_error:
+            warning = 'Warning: change of scale'
+        return height, width, warning
     elif height:
-        aspect_ratio = height / image_size[1]
-        return image_size[0] * aspect_ratio, height
-    elif arguments.width:
-        aspect_ratio = width / image_size[0]
-        return width, image_size[1] * aspect_ratio
+        aspect_ratio = height / image_height
+        return int(image_width * aspect_ratio), height, warning
+    elif width:
+        aspect_ratio = width / image_width
+        return width, int(image_height * aspect_ratio), warning
 
 
 def get_new_size(image, arguments):
     if arguments.scale:
-        width, height = map(lambda x: x * arguments.scale, image.size)
-    elif arguments.height or arguments.width:
-        image_size = image.size
-        width, height = get_new_size_by_dimension(
-            image_size,
+        width, height = map(lambda x: int(x * arguments.scale), image.size)
+        warning = None
+    else:
+        image_width, image_height = image.size
+        width, height, warning = get_new_size_by_dimension(
+            image_width,
+            image_height,
             arguments.height,
             arguments.width
         )
-    return map(int, (width, height))
+    return width, height, warning
 
 
 def resize_image(image, width, height):
@@ -72,7 +76,7 @@ def resize_image(image, width, height):
 
 def get_new_name(file_path, width, heigth):
     name_of_image, extension = os.path.splitext(file_path)
-    size = '{}x{}'.format(str(width), str(height))
+    size = '{}x{}'.format(width, height)
     new_name = '{}__{}{}'.format(name_of_image, size, extension)
     return new_name
 
@@ -89,7 +93,9 @@ if __name__ == '__main__':
     elif not (arguments.height or arguments.width or arguments.scale):
         sys.exit('You did not write enough arguments')
     else:
-        width, height = get_new_size(image, arguments)
+        width, height, warning = get_new_size(image, arguments)
+        if warning:
+            print(warning)
     new_name = get_new_name(arguments.input_path, width, height)
     output_path = arguments.output_path + new_name
     output_image(resize_image(image, width, height), output_path)
